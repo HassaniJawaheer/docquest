@@ -1,5 +1,5 @@
 
-## Définition du périmètre minimal (MVP)
+## Définition du périmètre minimal
 
 ### Ce qu’il faut absolument pour que la démo tienne debout
 
@@ -12,7 +12,7 @@
 
 #### Indexation locale
 
-* Index créé et stocké en local avec FAISS ou ChromaDB.
+* Index créé et stocké en local avec FAISS.
 * Pas de base de données distante.
 * Embeddings générés localement ou via une API gratuite si disponible.
 * Par défaut, on part sur du local, sauf blocage technique.
@@ -31,31 +31,22 @@
   * `/upload` pour envoyer les fichiers
   * `/create_vector_db` pour lancer l’indexation
   * `/generate` pour envoyer une question et recevoir une réponse
-* Possibilité d’utiliser LangChain pour orchestrer les appels RAG, mais ce n’est pas indispensable pour la première version.
+* Utiliser LangChain pour orchestrer les appels RAG, mais ce n’est pas indispensable pour la première version.
 
 #### Modèle de langage
 
-* Utilisation prioritaire d’une API gratuite (OpenRouter, Mistral API, etc.) pour gagner du temps.
+* Utilisation prioritaire d’une API gratuite (Mistral API, etc.) pour gagner du temps.
 * Option possible de charger un petit modèle quantifié localement (GPU 8Go, donc modèle léger).
-* La tokenisation est gérée automatiquement par la librairie ou le modèle, pas besoin de la coder soi-même.
-
----
+* La tokenisation est gérée automatiquement par l'API dans le cas d'utilisation d'une API sinon il faudra s'en occuper nous meme si on veut utiliser des modèle en local.
+* La vectorisation doit se faire via un modèle ultra lèger (oublier Qwen, etc), pourrais partir sur du `sentence-transformers/paraphrase-MiniLM-L6-v2`.
 
 ### Ce qu’on pourrait ajouter si on a du temps
 
-* Génération automatique de QCM à partir des documents.
-* Résumé automatique des documents (extraction ou abstraction).
+* Génération automatique de QCM à partir des documents : on utilisera des prompt, pas de finetuning.
+* Résumé automatique des documents (extraction ou abstraction) : on utilisera des prompt.
 * Extraction et affichage séparé des tableaux et images.
 * Support OCR pour les fichiers scannés ou images.
 * Système multi-utilisateur ou gestion de comptes (hors périmètre pour le moment).
 
----
-
-### À propos du local vs cloud
-
-* L’application doit pouvoir tourner entièrement en local (backend, frontend, base vectorielle).
-* L’usage d’APIs externes gratuites est autorisé si cela permet d’éviter des implémentations longues.
-* Pas d’utilisation de bases de données cloud ou d’outils payants, sauf solution gratuite et fiable.
-* Pas besoin de Docker pour la première démo, mais on peut le prévoir pour les tests si nécessaire.
 
 
