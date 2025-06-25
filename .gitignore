@@ -6,4 +6,4 @@ venv/
 .idea/
 .DS_Store
 __faiss_index__/
-
+env/
