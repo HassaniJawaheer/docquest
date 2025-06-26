@@ -9,6 +9,6 @@ class LLMHandler:
     """
     def generate_answer(self, query: Query, context: List[Chunk]) -> Answer:
         """
-        Génère une réponse à partir d’une question et d’un context
+        Generates an answer from a question and a context
         """
         pass

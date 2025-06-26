@@ -1,13 +1,13 @@
 from typing import List
 from pydantic import BaseModel
 
-class QCMQuestion(BaseModel):
+class Question(BaseModel):
     question: str
     correct_answer: str
     distractors: List[str]
 
-class QCM(BaseModel):
+class MCQ(BaseModel):
     """
     Represents a multiple-choice questionnaire
     """
-    questions : List[QCMQuestion]
+    questions : List[Question]

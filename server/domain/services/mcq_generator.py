@@ -1,11 +1,11 @@
 from domain.models.document import Document
-from domain.models.qcm import QCM
+from server.domain.models.mcq import MCQ
 
-class QCMGenerator:
+class MCQGenerator:
     """
     Automatic MCQ generation service.
     """
-    def generate_qcm(self, document: Document) -> QCM:
+    def generate(self, document: Document) -> MCQ:
         """
         Generates a MCQ from a document.
         """

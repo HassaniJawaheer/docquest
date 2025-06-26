@@ -2,10 +2,11 @@ from server.domain.models.document import Document
 
 class DocumentProcessor:
     """
-    Document processing service
+    Service responsible for transforming raw file content into a structured Document.
     """
-    def process (self, file_path: str) -> Document:
+
+    def process(self, file_bytes: bytes) -> Document:
         """
-        Analyzes a file and returns a structured Document.
+        Process a file (as bytes) and return a Document object.
         """
         pass
