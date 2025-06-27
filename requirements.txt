@@ -1,1 +1,6 @@
 pydantic
+fastapi
+uvicorn
+python-multipart
+httpx
+python-jose

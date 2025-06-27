@@ -17,4 +17,4 @@ class UploadDocuments:
             doc = self.processor.process(file)
             documents.append(doc)
         self.workspace_manager.assign(session_id, workspace, documents)
-        return documents
+        return None
