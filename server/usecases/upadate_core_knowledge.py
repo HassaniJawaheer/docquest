@@ -1,6 +1,6 @@
-from server.domain.services.corpus_loader import CorpusLoader
-from server.domain.services.embedder import Embedder
-from server.domain.services.docs_splitter import Splitter
+from server.interfaces.services.corpus_loader import CorpusLoader
+from server.interfaces.services.embedder import Embedder
+from server.interfaces.services.docs_splitter import Splitter
 
 def __init__(self, corpus_loader: CorpusLoader, splitter: Splitter, embedder: Embedder):
     self.corpus_loader = corpus_loader

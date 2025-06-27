@@ -1,7 +1,7 @@
 from typing import List
 from server.domain.models.document import Document
 from server.domain.models.summary import Summary
-from server.domain.services.summarizer import Summarizer
+from server.interfaces.services.summarizer import Summarizer
 
 class SummarizeDocuments:
     """

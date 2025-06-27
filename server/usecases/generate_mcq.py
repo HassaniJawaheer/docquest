@@ -1,7 +1,7 @@
 from typing import List
 from server.domain.models.document import Document
 from server.domain.models.mcq import MCQ
-from server.domain.services.mcq_generator import MCQGenerator
+from server.interfaces.services.mcq_generator import MCQGenerator
 
 class GenerateMCQ:
     """

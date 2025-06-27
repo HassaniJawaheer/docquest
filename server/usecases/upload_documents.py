@@ -1,7 +1,7 @@
 from typing import List
 from server.domain.models.document import Document
-from server.domain.services.document_processor import DocumentProcessor
-from server.domain.services.workspace_manager import WorkspaceManager
+from server.interfaces.services.document_processor import DocumentProcessor
+from server.interfaces.services.workspace_manager import WorkspaceManager
 
 class UploadDocuments:
     """
