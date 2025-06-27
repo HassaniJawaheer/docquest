@@ -7,8 +7,8 @@ class SummarizeDocuments:
     """
     Generates a summary from a selection of documents
     """
-    def __init__(self, summmarizer: Summarizer):
-        self.summarizer = summmarizer
+    def __init__(self, summarizer: Summarizer):
+        self.summarizer = summarizer
 
     def run(self, documents: List[Document]) -> Summary:
         return self.summarizer.summarize(documents)
