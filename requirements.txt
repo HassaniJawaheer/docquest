@@ -5,3 +5,7 @@ python-multipart
 httpx
 python-jose
 redis
+langchain
+langchain-community
+langchain-huggingface
+langchain-text-splitters

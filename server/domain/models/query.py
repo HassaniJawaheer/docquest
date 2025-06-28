@@ -4,4 +4,4 @@ class Query(BaseModel):
     """
     Represents a question asked by the user.
     """
-    text: str
+    content: str

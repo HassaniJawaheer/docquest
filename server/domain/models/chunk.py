@@ -1,9 +1,8 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class Chunk(BaseModel):
-    """
-    Represents a text segment extracted from a document
-    """
     content: str
-    position: int
-    score: float = 0.0
+    doc_id: Optional[str] = None
+    position: Optional[int] = None
+    metadata: Optional[dict] = None

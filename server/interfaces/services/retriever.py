@@ -6,7 +6,7 @@ class Retriever:
     """
     Search service for relevant chunks based on a query.
     """
-    def retrieve(self, query: Query, chunks: List[Chunk]) -> List[Chunk]:
+    def retrieve(self, query: Query) -> List[Chunk]:
         """
         Returns the most relevant chunks for the query.
         """
