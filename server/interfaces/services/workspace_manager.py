@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from server.domain.models.document import Document
+from server.domain.models.document import Doc
 
 class WorkspaceManager(ABC):
     """
@@ -9,11 +9,11 @@ class WorkspaceManager(ABC):
     """
 
     @abstractmethod
-    def assign(self, session_id: str, workspace: str, documents: List[Document]) -> None:
+    def assign(self, session_id: str, workspace: str, documents: List[Doc]) -> None:
         pass
 
     @abstractmethod
-    def get(self, session_id: str, workspace: str) -> List[Document]:
+    def get(self, session_id: str, workspace: str) -> List[Doc]:
         pass
 
     @abstractmethod
