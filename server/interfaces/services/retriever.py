@@ -1,13 +1,10 @@
-from server.domain.models.chunk import Chunk
+from abc import ABC, abstractmethod
 from server.domain.models.query import Query
+from server.domain.models.chunk import Chunk
 from typing import List
 
-class Retriever:
-    """
-    Search service for relevant chunks based on a query.
-    """
+class Retriever(ABC):
+    @abstractmethod
     def retrieve(self, query: Query) -> List[Chunk]:
-        """
-        Returns the most relevant chunks for the query.
-        """
         pass
+
