@@ -2,8 +2,7 @@ from server.usecases import (
     UploadDocuments,
     GenerateMCQ,
     SummarizeDocuments,
-    QueryUserVectorDB,
-    QueryCentralVectorDB
+    QueryVectorDB,
 )
 
 from server.infrastructure.services import (
@@ -23,12 +22,6 @@ def get_summarize_documents() -> SummarizeDocuments:
     summarizer = Summarizer()
     return SummarizeDocuments(summarizer)
 
-def get_query_user_vector_db() -> QueryUserVectorDB:
-    retriever = Retriever()
+def get_query_vector_db() -> QueryVectorDB:
     llm = LLMHandler()
-    return QueryUserVectorDB(retriever, llm)
-
-def get_query_central_vector_db() -> QueryCentralVectorDB:
-    retriever = Retriever()
-    llm = LLMHandler()
-    return QueryUserVectorDB(retriever, llm)
+    return QueryVectorDB(llm)

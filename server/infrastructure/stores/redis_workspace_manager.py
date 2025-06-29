@@ -2,7 +2,7 @@ from redis import Redis
 from typing import List
 import json
 from server.domain.models.document import Doc
-from server.interfaces.services.workspace_manager import WorkspaceManager
+from server.interfaces.stores.workspace_manager import WorkspaceManager
 
 
 class RedisWorkspaceManager(WorkspaceManager):

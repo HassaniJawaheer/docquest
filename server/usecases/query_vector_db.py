@@ -6,12 +6,11 @@ from server.domain.models.query import Query
 from server.interfaces.services.llm_handler import LLMHandler
 from server.infrastructure.services.langchain_faiss_retriever import LangchainFaissRetriever
 
-class QueryCentralVectorDB:
-    def __init__(self, vector_db: FAISS, llm: LLMHandler):
-        self.vector_db = vector_db
+class QueryVectorDB:
+    def __init__(self, llm: LLMHandler):
         self.llm = llm
     
-    def run(self, query: Query) -> Answer:
-        retriever = LangchainFaissRetriever(self.vector_db)
+    def run(self, query: Query, vector_db: FAISS) -> Answer:
+        retriever = LangchainFaissRetriever(vector_db)
         chunks: List[Chunk] = retriever.retrieve(query)
         return self.llm.generate_answer(query, chunks)

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from redis import Redis
 from server.domain.models.session import Session
-from server.interfaces.services.session_manager import SessionManager
+from server.interfaces.stores.session_manager import SessionManager
 
 
 class RedisSessionManager(SessionManager):

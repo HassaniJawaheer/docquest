@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import UploadFile
 from server.interfaces.services.document_processor import DocumentProcessor
-from server.interfaces.services.workspace_manager import WorkspaceManager
+from server.interfaces.stores.workspace_manager import WorkspaceManager
 
 class UploadDocuments:
     """

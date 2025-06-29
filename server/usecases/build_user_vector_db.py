@@ -1,4 +1,4 @@
-from server.interfaces.services.workspace_manager import WorkspaceManager
+from server.interfaces.stores.workspace_manager import WorkspaceManager
 from server.interfaces.services.docs_splitter import Splitter
 from server.interfaces.services.embedder import Embedder
 
