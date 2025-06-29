@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from server.interfaces.dependencies import get_generate_mcq_usecase
+from server.infrastructure.dependencies import get_generate_mcq_usecase
 from server.usecases.generate_mcq import GenerateMCQ
 from server.interfaces.services.workspace_manager import WorkspaceManager
 

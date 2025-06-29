@@ -12,3 +12,4 @@ langchain-text-splitters
 PyMuPDF
 python-docx
 faiss-cpu
+apscheduler

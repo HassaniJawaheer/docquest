@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from server.interfaces.dependencies import get_query_central_vector_db
+from server.infrastructure.dependencies import get_query_central_vector_db
 from server.usecases.query_central_vector_db import QueryCentralVectorDB
 from server.domain.models.query import Query
 

@@ -6,19 +6,14 @@ from server.usecases import (
     QueryCentralVectorDB
 )
 
-from server.interfaces.services import (
-    DocumentProcessor,
-    WorkspaceManager,
-    MCQGenerator,
-    Summarizer,
-    Retriever,
-    LLMHandler
+from server.infrastructure.services import (
+    UploadedDocumentProcessor
 )
 
+
 def get_upload_documents_usecase() -> UploadDocuments:
-    processor = DocumentProcessor()
-    workspace = WorkspaceManager()
-    return UploadDocuments(processor, workspace)
+    processor = UploadedDocumentProcessor()
+    return UploadDocuments(processor)
 
 def get_generate_mcq_usecase() -> GenerateMCQ:
     mcq_generator = MCQGenerator()

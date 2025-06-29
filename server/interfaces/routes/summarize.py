@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from server.interfaces.dependencies import get_summarize_documents
+from server.infrastructure.dependencies import get_summarize_documents
 from server.usecases.summarize_documents import SummarizeDocuments
 from server.interfaces.services.workspace_manager import WorkspaceManager
 
