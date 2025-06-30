@@ -1,10 +1,14 @@
-from typing import List
+from typing import List, Literal
 from pydantic import BaseModel
-from .chunk import Chunk
+from server.domain.models.mcq import Question
 
 class Answer(BaseModel):
-    """
-    Represents a response generated from a query.
-    """
-    text: str
-    sources: List[Chunk]
+    type: Literal["text", "qcm"]
+
+class TextAnswer(Answer):
+    type: Literal["text"] = "text"
+    content: str
+
+class MCQAnswer(Answer):
+    type: Literal["qcm"] = "qcm"
+    questions: List[Question]

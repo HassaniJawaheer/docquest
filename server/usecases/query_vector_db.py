@@ -3,11 +3,11 @@ from typing import List
 from server.domain.models.answer import Answer
 from server.domain.models.chunk import Chunk
 from server.domain.models.query import Query
-from server.interfaces.services.llm_handler import LLMHandler
+from server.interfaces.services.llm import LLM
 from server.infrastructure.services.langchain_faiss_retriever import LangchainFaissRetriever
 
 class QueryVectorDB:
-    def __init__(self, llm: LLMHandler):
+    def __init__(self, llm: LLM):
         self.llm = llm
     
     def run(self, query: Query, vector_db: FAISS) -> Answer:
