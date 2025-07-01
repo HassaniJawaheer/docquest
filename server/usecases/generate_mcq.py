@@ -1,6 +1,6 @@
 from typing import List
 from server.domain.models.document import Document
-from server.domain.models.mcq import MCQ
+from server.domain.models.answer import MCQAnswer
 from server.interfaces.services.mcq_generator import MCQGenerator
 
 class GenerateMCQ:
@@ -10,5 +10,5 @@ class GenerateMCQ:
     def __init__(self, mcq_generator: MCQGenerator):
         self.mcq_generator = mcq_generator
     
-    def run(self, documents: List[Document]) -> MCQ:
+    def run(self, documents: List[Document]) -> MCQAnswer:
         return self.mcq_generator.generate(documents)

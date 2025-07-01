@@ -1,14 +1,9 @@
+from abc import ABC, abstractmethod
 from typing import List
-from domain.models.document import Doc
+from server.domain.models.document import Doc
 from server.domain.models.answer import MCQAnswer
-from server.interfaces.services.llm import LLM
 
-class MCQGenerator:
-    """
-    Automatic MCQ generation service.
-    """
-    def generate_qcm(self, docs: List[Doc], llm: LLM) -> MCQAnswer:
-        """
-        Generates a MCQ from a document.
-        """
+class MCQGenerator(ABC):
+    @abstractmethod
+    def generate(self, docs: List[Doc]) -> MCQAnswer:
         pass

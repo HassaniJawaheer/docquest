@@ -6,7 +6,10 @@ from server.usecases import (
 )
 
 from server.infrastructure.services import (
-    UploadedDocumentProcessor
+    UploadedDocumentProcessor,
+    GroqLLM,
+    DefaultPromptBuilder,
+    DefaultMCQGenerator
 )
 
 
@@ -15,7 +18,9 @@ def get_upload_documents_usecase() -> UploadDocuments:
     return UploadDocuments(processor)
 
 def get_generate_mcq_usecase() -> GenerateMCQ:
-    mcq_generator = MCQGenerator()
+    llm = GroqLLM(api_key="your-api-key")
+    prompt_builder = DefaultPromptBuilder()
+    mcq_generator = DefaultMCQGenerator(llm=llm, prompt_builder=prompt_builder)
     return GenerateMCQ(mcq_generator)
 
 def get_summarize_documents() -> SummarizeDocuments:
@@ -25,3 +30,4 @@ def get_summarize_documents() -> SummarizeDocuments:
 def get_query_vector_db() -> QueryVectorDB:
     llm = LLMHandler()
     return QueryVectorDB(llm)
+
