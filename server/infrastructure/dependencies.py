@@ -10,7 +10,8 @@ from server.infrastructure.services import (
     GroqLLM,
     DefaultPromptBuilder,
     DefaultMCQGenerator,
-    DefaultSummarizer
+    DefaultSummarizer,
+    DefaultQueryResponder
 )
 
 def get_upload_documents_usecase() -> UploadDocuments:
@@ -30,6 +31,8 @@ def get_summarize_documents() -> SummarizeDocuments:
     return SummarizeDocuments(summarizer)
 
 def get_query_vector_db() -> QueryVectorDB:
-    llm = LLMHandler()
-    return QueryVectorDB(llm)
+    llm = GroqLLM(api_key="your-api-key")
+    prompt_builder = DefaultPromptBuilder()
+    query_responder = DefaultQueryResponder(llm=llm, prompt_builder=prompt_builder)
+    return QueryVectorDB(query_responder)
 

@@ -1,17 +1,12 @@
-from langchain_community.vectorstores import FAISS
 from typing import List
 from server.domain.models.answer import TextAnswer
 from server.domain.models.chunk import Chunk
 from server.domain.models.query import Query
-from server.interfaces.services.llm import LLM
-from server.infrastructure.services.langchain_faiss_retriever import LangchainFaissRetriever
+from server.interfaces.services.quey_responder import QueryResponder
 
 class QueryVectorDB:
-    def __init__(self, llm: LLM):
-        self.llm = llm
+    def __init__(self, query_responder: QueryResponder):
+        self.query_responder = query_responder
         
-    
-    def run(self, query: Query, vector_db: FAISS) -> TextAnswer:
-        retriever = LangchainFaissRetriever(vector_db)
-        chunks: List[Chunk] = retriever.retrieve(query)
-        return self.llm.generate_answer(query, chunks)
+    def run(self, query: Query, chunks: List[Chunk]) -> TextAnswer:
+        return self.query_responder.response(query, chunks)

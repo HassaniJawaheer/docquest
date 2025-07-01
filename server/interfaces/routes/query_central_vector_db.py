@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request
+from typing import List
+from server.domain.models.chunk import Chunk
 from server.infrastructure.dependencies import get_query_vector_db
 from server.usecases.query_vector_db import QueryVectorDB
 from server.domain.models.query import Query
 from server.utils.request_helpers import get_session_id
+from server.infrastructure.services.langchain_faiss_retriever import LangchainFaissRetriever
 
 router = APIRouter()
 
@@ -16,5 +19,7 @@ def query_central_vector_db(
     _ = get_session_id(request)
     
     vector_db = request.app.state.vector_db_manager.get('central')
-    answer = usecase.run(query, vector_db)
+    retriever = LangchainFaissRetriever(vector_db)
+    chunks: List[Chunk] = retriever.retrieve(query)
+    answer = usecase.run(query, chunks)
     return answer.model_dump()

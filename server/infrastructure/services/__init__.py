@@ -3,3 +3,4 @@ from .groq_llm import GroqLLM
 from .default_prompt_builder import DefaultPromptBuilder
 from .default_mcq_generator import DefaultMCQGenerator
 from .default_summarizer import DefaultSummarizer
+from .default_query_responder import DefaultQueryResponder
