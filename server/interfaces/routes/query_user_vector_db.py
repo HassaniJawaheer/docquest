@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request
 from server.infrastructure.dependencies import get_query_vector_db
 from server.usecases.query_vector_db import QueryVectorDB
 from server.domain.models.query import Query

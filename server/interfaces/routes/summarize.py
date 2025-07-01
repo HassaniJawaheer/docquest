@@ -15,4 +15,4 @@ def summarize(
     if not documents:
         raise HTTPException(status_code=404, detail="No documents found in workspace 'summarize'")
     summary = usecase.run(documents)
-    return summary.model_dump()
+    return summary.model_dump

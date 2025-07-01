@@ -9,9 +9,9 @@ from server.infrastructure.services import (
     UploadedDocumentProcessor,
     GroqLLM,
     DefaultPromptBuilder,
-    DefaultMCQGenerator
+    DefaultMCQGenerator,
+    DefaultSummarizer
 )
-
 
 def get_upload_documents_usecase() -> UploadDocuments:
     processor = UploadedDocumentProcessor()
@@ -24,7 +24,9 @@ def get_generate_mcq_usecase() -> GenerateMCQ:
     return GenerateMCQ(mcq_generator)
 
 def get_summarize_documents() -> SummarizeDocuments:
-    summarizer = Summarizer()
+    llm = GroqLLM(api_key="your-api-key")
+    prompt_builder = DefaultPromptBuilder()
+    summarizer = DefaultSummarizer(llm=llm, prompt_builder=prompt_builder)
     return SummarizeDocuments(summarizer)
 
 def get_query_vector_db() -> QueryVectorDB:
