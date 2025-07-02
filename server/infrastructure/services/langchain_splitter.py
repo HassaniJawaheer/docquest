@@ -5,7 +5,7 @@ from server.domain.models.chunk import Chunk
 from server.interfaces.services.docs_splitter import Splitter
 
 class LangchainSplitter(Splitter):
-    def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
+    def __init__(self, chunk_size: int = 2000, chunk_overlap: int = 200):
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap

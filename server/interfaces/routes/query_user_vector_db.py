@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from typing import List
 from server.domain.models.chunk import Chunk
 from server.infrastructure.dependencies import get_query_vector_db
@@ -15,11 +15,21 @@ def query_user_vector_db(
     request: Request,
     usecase: QueryVectorDB = Depends(get_query_vector_db)
 ):
-    # Get session ID from request
+    # Extract session ID from the request
     session_id = get_session_id(request)
-    
-    vector_db = request.app.state.vector_db_manager.get(session_id, 'central')
+
+    # Retrieve the user-specific vector DB
+    try:
+        vector_db = request.app.state.vector_db_manager.get(session_id, "central")
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"No vector DB found for session {session_id}")
+
+    # Retrieve relevant chunks from the vector DB using the retriever
     retriever = LangchainFaissRetriever(vector_db)
     chunks: List[Chunk] = retriever.retrieve(query)
+
+    # Run the query use case to generate an answer
     answer = usecase.run(query, chunks)
+
+    # Return the answer as JSON
     return answer.model_dump()
