@@ -3,27 +3,129 @@ import uuid
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+import logging
+import threading
+import time
 
+# ------ Logging ------
+from server.config.logging_config import configure_logging
+logger = logging.getLogger(__name__)
+configure_logging()
+
+# ------ Routers ------
 from server.interfaces.routes.generate_mcq import router as generate_mcq_router
 from server.interfaces.routes.summarize import router as summarize_router
 from server.interfaces.routes.upload import router as upload_router
 from server.interfaces.routes.query_central_vector_db import router as query_central_vector_db_router
 from server.interfaces.routes.query_user_vector_db import router as query_user_vector_db_router
-from server.interfaces.routes.summarize import router as summarize_router
+from server.interfaces.routes.root import router as root_router
+
+# ------ Infrastructure & services ------
+from server.infrastructure.stores.inmemory_vector_db_manager import InMemoryVectorDBManager
+from server.infrastructure.services.huggingface_embedder import HuggingFaceEmbedder
 from server.infrastructure.stores.redis_workspace_manager import RedisWorkspaceManager
 from server.infrastructure.stores.redis_session_manager import RedisSessionManager
 from server.infrastructure.services.faiss_vector_db_builder import FaissVectorDatabaseBuilder
+from server.infrastructure.services.langchain_splitter import LangchainSplitter
+from server.infrastructure.services.classic_corpus_loader import LocalCorpusLoader
+from server.infrastructure.services.corpus_state_hasher import CorpusStateHasher
+from server.usecases.update_central_vector_db import UpdateCentralVectorDB
 
-
+# ------ Load environment ------
 load_dotenv()
-
 FRONT_BASE_URL = os.getenv("FRONT_BASE_URL", "*")
 DEMO_SESSION_ID = os.getenv("DEMO_SESSION_ID", str(uuid.uuid4()))
+CLEAN_REDIS = os.getenv("CLEAN_REDIS_ON_SHUTDOWN", "False").lower() == "true"
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+CENTRAL_CORPUS_PATH = os.getenv("CENTRAL_CORPUS_PATH", "corpus/central")
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
+TOP_K_SIMILAR_VECTORS = int(os.getenv("TOP_K_SIMILAR_VECTORS", 5))
 
-# ---- Initialisation de l'app FastAPI
-app = FastAPI()
+# ------ Shutdown logic ------
+def lifespan(app: FastAPI):
+    yield  # Start-up phase complete
 
-# ---- Middleware CORS
+    if not CLEAN_REDIS:
+        logger.info("[shutdown] Redis cleanup skipped (CLEAN_REDIS_ON_SHUTDOWN=False)")
+        return
+
+    try:
+        logger.info("[shutdown] Cleaning Redis session and document keys...")
+        if hasattr(app.state, "session_repo"):
+            redis = app.state.session_repo.redis
+            session_keys = redis.keys("docquest:*")
+            if session_keys:
+                redis.delete(*session_keys)
+                logger.info(f"[shutdown] Deleted {len(session_keys)} session keys.")
+            else:
+                logger.info("[shutdown] No session keys found.")
+        if hasattr(app.state, "workspace_manager"):
+            redis = app.state.workspace_manager.redis
+            doc_keys = redis.keys("docquest:*")
+            if doc_keys:
+                redis.delete(*doc_keys)
+                logger.info(f"[shutdown] Deleted {len(doc_keys)} document keys.")
+            else:
+                logger.info("[shutdown] No document keys found.")
+    except Exception as e:
+        logger.warning(f"[shutdown] Redis cleanup failed: {e}")
+
+# ------ FastAPI app creation ------
+app = FastAPI(lifespan=lifespan)
+
+# ------ Embedding model ------
+logger.info("[startup] Loading embedding model...")
+embedder = HuggingFaceEmbedder()
+app.state.embedding_model = embedder.get_model()
+logger.info("[startup] Embedding model loaded.")
+
+# ------ Redis-based repositories ------
+logger.info("[startup] Initializing Redis session & document managers...")
+app.state.session_manager = RedisSessionManager()
+app.state.workspace_manager = RedisWorkspaceManager(app.state.session_manager.redis)
+logger.info("[startup] Redis repositories ready.")
+
+# ------ In-memory vector DB manager ------
+logger.info("[startup] Initializing vector database manager...")
+app.state.vector_db_manager = InMemoryVectorDBManager()
+
+# ------ Build central vector DB ------
+logger.info("[startup] Building central vector database...")
+splitter = LangchainSplitter()
+loader = LocalCorpusLoader()
+db_builder = FaissVectorDatabaseBuilder(app.state.embedding_model)
+hasher = CorpusStateHasher()
+updater = UpdateCentralVectorDB(
+    corpus_loader=loader,
+    splitter=splitter,
+    db_builder=db_builder,
+    corpus_hasher=hasher
+)
+central_db = updater.run(CENTRAL_CORPUS_PATH)
+app.state.vector_db_manager.register("central", central_db)
+logger.info("[startup] Central vector DB created and registered.")
+
+# ------ Background watcher to update central DB ------
+def continuous_update_central_vector_db():
+    while True:
+        try:
+            time.sleep(300)  # Every 5 minutes
+            logger.info("[watcher] Checking for updates in central corpus...")
+            updated_db = updater.run(CENTRAL_CORPUS_PATH)
+            if updated_db != "No change detected. Skipped update.":
+                app.state.vector_db_manager.register("central", updated_db)
+                logger.info("[watcher] Central vector DB updated and re-registered.")
+            else:
+                logger.info("[watcher] No update needed.")
+        except Exception as e:
+            logger.warning(f"[watcher] Update failed: {e}")
+
+threading.Thread(target=continuous_update_central_vector_db, daemon=True).start()
+logger.info("[startup] Watcher thread started.")
+
+# ------ Middleware ------
+logger.info("[startup] Adding CORS middleware...")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[FRONT_BASE_URL],
@@ -32,46 +134,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---- Démarrage de l'application
-@app.on_event("startup")
-def startup_demo():
-    # Session
-    app.state.session_id = DEMO_SESSION_ID
-    app.state.workspace_manager = WorkspaceManager()
-    app.state.workspace_manager.create(DEMO_SESSION_ID)
-
-    # Embedding model
-    embedding_loader = HuggingfaceEmbeddingLoader(model_path=os.getenv("MODEL_EMBEDDING_PATH"))
-    app.state.embedding_model = embedding_loader.load()
-
-    # Redis
-    app.state.session_repo = RedisSessionRepository(
-        host=os.getenv("REDIS_HOST"),
-        port=int(os.getenv("REDIS_PORT")),
-        db=int(os.getenv("REDIS_DB")),
-        ttl=int(os.getenv("REDIS_TTL"))
-    )
-    app.state.document_repo = RedisDocumentRepository(app.state.session_repo.redis)
-
-    # FAISS
-    app.state.vector_database = FaissVectorDatabase(
-        embedding_model=app.state.embedding_model,
-        base_path=os.getenv("DB_REPOSITORY", "server/infrastructure/vectorstores"),
-        chunk_size=int(os.getenv("CHUNK_SIZE")),
-        chunk_overlap=int(os.getenv("CHUNK_OVERLAP")),
-        top_k_similar_vectors=int(os.getenv("TOP_K_SIMILAR_VECTORS"))
-    )
-
-    print(f"[INIT] Session de démo : {DEMO_SESSION_ID}")
-    print("[INIT] Démo prête.")
-
-# ---- Routes 
+# ------ Routes ------
+logger.info("[startup] Registering routes...")
+app.include_router(root_router, prefix="", tags=["root"])
 app.include_router(upload_router, prefix="", tags=["upload"])
+app.include_router(generate_mcq_router, prefix="", tags=["generate_qcm"])
+app.include_router(summarize_router, prefix="", tags=["summarize"])
+app.include_router(query_central_vector_db_router, prefix="", tags=["query_central"])
+app.include_router(query_user_vector_db_router, prefix="", tags=["query_user"])
+logger.info("[startup] All routes registered.")
 
-# ---- Route de test
-@app.get("/")
-def root():
-    return {
-        "status": "ok",
-        "session_id": app.state.session_id
-    }
