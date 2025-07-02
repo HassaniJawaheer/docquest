@@ -2,7 +2,7 @@ from typing import List
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from server.domain.models.document import Doc
 from server.domain.models.chunk import Chunk
-from server.interfaces.services.docs_splitter import Splitter
+from server.interfaces.services.splitter import Splitter
 
 class LangchainSplitter(Splitter):
     def __init__(self, chunk_size: int = 2000, chunk_overlap: int = 200):

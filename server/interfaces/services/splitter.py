@@ -1,5 +1,6 @@
 from typing import List
-from server.domain.models.document import Doc, Chunk
+from server.domain.models.document import Doc
+from server.domain.models.chunk import Chunk
 
 class Splitter:
     """

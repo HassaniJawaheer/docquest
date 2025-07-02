@@ -6,6 +6,8 @@ from starlette.middleware.cors import CORSMiddleware
 import logging
 import threading
 import time
+import redis
+
 
 # ------ Logging ------
 from server.config.logging_config import configure_logging
@@ -36,11 +38,15 @@ load_dotenv()
 FRONT_BASE_URL = os.getenv("FRONT_BASE_URL", "*")
 DEMO_SESSION_ID = os.getenv("DEMO_SESSION_ID", str(uuid.uuid4()))
 CLEAN_REDIS = os.getenv("CLEAN_REDIS_ON_SHUTDOWN", "False").lower() == "true"
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 CENTRAL_CORPUS_PATH = os.getenv("CENTRAL_CORPUS_PATH", "corpus/central")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
 TOP_K_SIMILAR_VECTORS = int(os.getenv("TOP_K_SIMILAR_VECTORS", 5))
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+REDIS_DB = int(os.getenv("REDIS_DB", 0))
+REDIS_TTL = int(os.getenv("REDIS_TTL", 3600))
+
 
 # ------ Shutdown logic ------
 def lifespan(app: FastAPI):
@@ -74,6 +80,14 @@ def lifespan(app: FastAPI):
 # ------ FastAPI app creation ------
 app = FastAPI(lifespan=lifespan)
 
+# ------ Initialize Redis client ------
+redis_client = redis.Redis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    db=REDIS_DB,
+    decode_responses=True  # Ensures values are returned as strings, not bytes
+)
+
 # ------ Embedding model ------
 logger.info("[startup] Loading embedding model...")
 embedder = HuggingFaceEmbedder()
@@ -82,8 +96,8 @@ logger.info("[startup] Embedding model loaded.")
 
 # ------ Redis-based repositories ------
 logger.info("[startup] Initializing Redis session & document managers...")
-app.state.session_manager = RedisSessionManager()
-app.state.workspace_manager = RedisWorkspaceManager(app.state.session_manager.redis)
+app.state.session_manager = RedisSessionManager(redis_client, REDIS_TTL)
+app.state.workspace_manager = RedisWorkspaceManager(redis_client)
 logger.info("[startup] Redis repositories ready.")
 
 # ------ In-memory vector DB manager ------

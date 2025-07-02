@@ -1,8 +1,7 @@
 import os
 from server.infrastructure.services.corpus_state_hasher import CorpusStateHasher
 from server.interfaces.services.corpus_loader import CorpusLoader
-from server.interfaces.services.embedder import Embedder
-from server.interfaces.services.docs_splitter import Splitter
+from server.interfaces.services.splitter import Splitter
 from server.interfaces.services.vector_database_builder import VectorDatabaseBuilder
 
 class UpdateCentralVectorDB:
