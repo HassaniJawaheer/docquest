@@ -1,4 +1,4 @@
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from server.interfaces.services.embedder import Embedder
 
 class HuggingFaceEmbedder(Embedder):

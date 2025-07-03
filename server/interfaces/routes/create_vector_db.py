@@ -28,6 +28,6 @@ def create_user_vector_db(request: Request):
     user_db = db_builder.build(chunks)
 
     # Register the new DB under the session ID
-    request.app.state.vector_db_manager.register(session_id, user_db)
+    request.app.state.vector_db_manager.set(session_id, user_db)
 
     return {"status": "success", "message": f"Vector DB created for session {session_id}"}

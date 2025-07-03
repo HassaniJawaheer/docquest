@@ -14,15 +14,16 @@ class LangchainSplitter(Splitter):
     def split(self, documents: List[Doc]) -> List[Chunk]:
         chunks = []
         for doc in documents:
+            # We just use the file name as metadata if needed
             lc_docs = self.splitter.create_documents(
-                [doc.text],
-                metadatas=[doc.metadata or {}]
+                [doc.content],
+                metadatas=[{"name": doc.name}]
             )
             for i, d in enumerate(lc_docs):
                 chunks.append(Chunk(
-                    text=d.page_content,
+                    content=d.page_content,
                     metadata=d.metadata,
                     position=i,
-                    doc_id=doc.metadata.get("source") if doc.metadata else None
+                    doc_id=doc.name
                 ))
         return chunks

@@ -1,6 +1,6 @@
-from typing import List, Any
-from langchain.schema import Document
-from langchain.vectorstores import FAISS
+from typing import List
+from langchain_core.documents import Document
+from langchain_community.vectorstores import FAISS
 from server.interfaces.services.retriever import Retriever
 from server.domain.models.query import Query
 from server.domain.models.chunk import Chunk

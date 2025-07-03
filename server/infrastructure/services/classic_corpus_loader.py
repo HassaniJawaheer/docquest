@@ -7,7 +7,7 @@ from server.interfaces.services.corpus_loader import CorpusLoader
 
 class LocalCorpusLoader(CorpusLoader):
     """
-    Loads all documents (.pdf, .docx, .txt) into one directory.
+    Loads all documents (.pdf, .docx, .txt) from one directory.
     """
     def load_from_path(self, path: str) -> List[Doc]:
         docs = []
@@ -24,21 +24,30 @@ class LocalCorpusLoader(CorpusLoader):
                 elif ext == "txt":
                     docs.append(self._read_txt(file_path))
         
-        return [doc for doc in docs if doc.text.strip()]
+        return [doc for doc in docs if doc.content.strip()]
 
     def _read_pdf(self, path: str) -> Doc:
         text = ""
         with fitz.open(path) as pdf:
             for page in pdf:
                 text += page.get_text()
-        return Doc(text=text, metadata={"source": path})
+        return Doc(
+            name=os.path.basename(path),
+            content=text
+        )
 
     def _read_docx(self, path: str) -> Doc:
-        doc = docx.Document(path)
-        full_text = "\n".join([para.text for para in doc.paragraphs])
-        return Doc(text=full_text, metadata={"source": path})
+        docx_doc = docx.Document(path)
+        full_text = "\n".join([para.text for para in docx_doc.paragraphs])
+        return Doc(
+            name=os.path.basename(path),
+            content=full_text
+        )
 
     def _read_txt(self, path: str) -> Doc:
         with open(path, "r", encoding="utf-8") as f:
             text = f.read()
-        return Doc(text=text, metadata={"source": path})
+        return Doc(
+            name=os.path.basename(path),
+            content=text
+        )

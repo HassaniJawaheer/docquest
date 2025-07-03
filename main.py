@@ -117,7 +117,7 @@ updater = UpdateCentralVectorDB(
     corpus_hasher=hasher
 )
 central_db = updater.run(CENTRAL_CORPUS_PATH)
-app.state.vector_db_manager.register("central", central_db)
+app.state.vector_db_manager.set("central", central_db)
 logger.info("[startup] Central vector DB created and registered.")
 
 # ------ Background watcher to update central DB ------

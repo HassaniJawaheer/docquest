@@ -1,5 +1,5 @@
 from typing import Dict
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from server.interfaces.stores.vector_db_manager import VectorDBManager
 
 class InMemoryVectorDBManager(VectorDBManager):
