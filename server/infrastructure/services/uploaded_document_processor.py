@@ -18,18 +18,18 @@ class UploadedDocumentProcessor(DocumentProcessor):
 
             if file_name.endswith('.txt'):
                 text = file_content.decode("utf-8")
-                return Doc(name=file.filename, text=text)
+                return Doc(name=file.filename, content=text)
 
             elif file_name.endswith('.docx'):
                 docx_file = docx.Document(BytesIO(file_content))
                 text = "\n".join(p.text for p in docx_file.paragraphs)
-                return Doc(name=file.filename, text=text)
+                return Doc(name=file.filename, content=text)
 
             elif file_name.endswith('.pdf'):
                 try:
                     pdf = fitz.open(stream=file_content, filetype="pdf")
                     text = "\n".join(page.get_text() for page in pdf)
-                    return Doc(name=file.filename, text=text)
+                    return Doc(name=file.filename, content=text)
                 except Exception as e:
                     logging.error(f"[DOCUMENT_PROCESSOR] PDF parsing failed: {file.filename} | {e}")
 
