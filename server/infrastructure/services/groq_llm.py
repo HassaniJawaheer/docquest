@@ -8,7 +8,7 @@ load_dotenv()
 class GroqLLM(LLM):
     def __init__(self):
         self.api_key = os.getenv("GROQ_API_KEY")
-        self.model = os.getenv("GROQ_MODEL", "mixtral-8x7b-32768")
+        self.model = os.getenv("GROQ_MODEL")
         self.url = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
 
         if not self.api_key:
