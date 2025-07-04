@@ -21,6 +21,7 @@ from server.interfaces.routes.upload import router as upload_router
 from server.interfaces.routes.query_central_vector_db import router as query_central_vector_db_router
 from server.interfaces.routes.query_user_vector_db import router as query_user_vector_db_router
 from server.interfaces.routes.root import router as root_router
+from server.interfaces.routes.create_vector_db import router as create_vector_db_router
 
 # ------ Infrastructure & services ------
 from server.infrastructure.stores.inmemory_vector_db_manager import InMemoryVectorDBManager
@@ -158,6 +159,7 @@ app.add_middleware(
 logger.info("[startup] Registering routes...")
 app.include_router(root_router, prefix="", tags=["root"])
 app.include_router(upload_router, prefix="", tags=["upload"])
+app.include_router(create_vector_db_router, prefix="", tags=["create_vector_db_router"])
 app.include_router(generate_mcq_router, prefix="", tags=["generate_qcm"])
 app.include_router(summarize_router, prefix="", tags=["summarize"])
 app.include_router(query_central_vector_db_router, prefix="", tags=["query_central"])

@@ -13,7 +13,7 @@ router = APIRouter()
 def create_user_vector_db(request: Request):
     # Get session ID from request
     session_id = get_session_id(request)
-
+    print(session_id)
     # Retrieve documents from workspace
     documents = request.app.state.workspace_manager.get(session_id, "rag")
     if not documents:

@@ -14,7 +14,6 @@ class UploadDocuments:
         documents = []
 
         for file in files:
-            print(file)
             doc = await self.processor.process(file)
             if doc:
                 documents.append(doc)

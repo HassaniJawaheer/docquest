@@ -1,10 +1,11 @@
 import os
 import requests
-
+from dotenv import load_dotenv
 API_URL = "http://127.0.0.1:8000/upload"
 
 # Session ID
-SESSION_ID = "11111111-1111-1111-1111-111111111111"
+load_dotenv()
+SESSION_ID = os.getenv("DEMO_SESSION_ID")
 
 # Documents
 TEST_DOCS_DIR = os.path.join(os.path.dirname(__file__), "documents")
@@ -22,7 +23,7 @@ def main():
 
     params = {
         "session_id": SESSION_ID,
-        "workspace": "demo"
+        "workspace": "rag"
     }
 
     response = requests.post(API_URL, params=params, files=files)
