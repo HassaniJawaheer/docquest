@@ -8,14 +8,14 @@ from server.domain.models.chunk import Chunk
 
 class LangchainFaissRetriever(Retriever):
     def __init__(self, db: FAISS):
-        self.retriever = db.as_retriever()
+        self.db = db
     
     def retrieve(self, query: Query) -> List[Chunk]:
-        results: List[Document] = self.retriever.get_relevant_documents(query.content)
+        results: List[Document] = self.db.similarity_search(query.content, k=5)
 
         return [
             Chunk(
-                text=doc.page_content,
+                content=doc.page_content,
                 metadata=doc.metadata or {}
             )
             for doc in results

@@ -33,6 +33,7 @@ from server.infrastructure.services.langchain_splitter import LangchainSplitter
 from server.infrastructure.services.classic_corpus_loader import LocalCorpusLoader
 from server.infrastructure.services.corpus_state_hasher import CorpusStateHasher
 from server.usecases.update_central_vector_db import UpdateCentralVectorDB
+from server.infrastructure.stores.redis_chat_history_manager import RedisChatHistoryManager
 from server.utils.create_demo_session import create_demo_session
 
 
@@ -101,9 +102,10 @@ logger.info("[startup] Embedding model loaded.")
 logger.info("[startup] Initializing Redis session & document managers...")
 app.state.session_manager = RedisSessionManager(redis_client, REDIS_TTL)
 app.state.workspace_manager = RedisWorkspaceManager(redis_client)
+app.state.chat_history_manager = RedisChatHistoryManager(redis_client)
 logger.info("[startup] Redis repositories ready.")
 
-# ------ Create a SEMO session  ------
+# ------ Create a DEMO session  ------
 demo_session_id = create_demo_session(app.state.session_manager)
 logger.info(f"[startup] Demo session created with ID: {demo_session_id}")
 

@@ -18,8 +18,9 @@ class UpdateCentralVectorDB:
         self.db_builder = db_builder
         self.corpus_hasher = corpus_hasher
         self.hash_file = hash_file
+        self.current_db = None  # keep in memory
 
-    def run(self, corpus_path: str) -> str:
+    def run(self, corpus_path: str):
         new_hash = self.corpus_hasher.compute_hash(corpus_path)
         old_hash = None
 
@@ -27,14 +28,17 @@ class UpdateCentralVectorDB:
             with open(self.hash_file, "r") as f:
                 old_hash = f.read().strip()
 
-        if new_hash == old_hash:
-            return "No change detected. Skipped update."
+        if new_hash == old_hash and self.current_db is not None:
+            print("[CentralDB] No change detected. Using existing vector DB in memory.")
+            return self.current_db
 
+        print("[CentralDB] Change detected or no DB yet. Rebuilding vector DB.")
         docs = self.corpus_loader.load_from_path(corpus_path)
         chunks = self.splitter.split(docs)
-        central_db = self.db_builder.build(chunks)
+        self.current_db = self.db_builder.build(chunks)
 
         with open(self.hash_file, "w") as f:
             f.write(new_hash)
 
-        return central_db
+        return self.current_db
+

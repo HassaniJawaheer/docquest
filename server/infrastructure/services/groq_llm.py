@@ -1,6 +1,8 @@
 import os
+from typing import List
 import requests
 from dotenv import load_dotenv
+from server.domain.models.chat_message import ChatMessage
 from server.interfaces.services.llm import LLM
 
 load_dotenv()
@@ -47,4 +49,35 @@ class GroqLLM(LLM):
 
         content = response.json()["choices"][0]["message"]["content"]
 
+        return content
+    
+    def generate_chat_answer(self, history: List[ChatMessage], prompt: str) -> str:
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+
+        user_message = ChatMessage(role="user", content=prompt)
+        history.append(user_message)
+        
+        # Convert to list of dict
+        history_dicts = [msg.model_dump() for msg in history]
+        
+        payload = {
+            "model": self.model,
+            "messages": history_dicts,
+            "max_tokens": self.max_tokens,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "frequency_penalty": self.frequency_penalty,
+            "presence_penalty": self.presence_penalty
+        }
+
+        response = requests.post(self.url, headers=headers, json=payload)
+
+        if not response.ok:
+            print(f"Groq returned {response.status_code}: {response.text}")
+        response.raise_for_status()
+
+        content = response.json()["choices"][0]["message"]["content"]
         return content
