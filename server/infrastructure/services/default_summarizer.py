@@ -12,8 +12,5 @@ class DefaultSummarizer(Summarizer):
 
     def summarize(self, docs: List[Doc]) -> TextAnswer:
         prompt = self.prompt_builder.prompt_for_summary(docs)
-        try:
-            content = self.llm.generate_answer(prompt)
-            return TextAnswer(type="text", content=content)
-        except Exception as e:
-            raise ValueError("Invalid response from LLM") from e
+        content = self.llm.generate_answer(prompt)
+        return TextAnswer(type="text", content=content)

@@ -19,19 +19,19 @@ def get_upload_documents_usecase() -> UploadDocuments:
     return UploadDocuments(processor)
 
 def get_generate_mcq_usecase() -> GenerateMCQ:
-    llm = GroqLLM(api_key="your-api-key")
+    llm = GroqLLM()
     prompt_builder = DefaultPromptBuilder()
     mcq_generator = DefaultMCQGenerator(llm=llm, prompt_builder=prompt_builder)
     return GenerateMCQ(mcq_generator)
 
 def get_summarize_documents() -> SummarizeDocuments:
-    llm = GroqLLM(api_key="your-api-key")
+    llm = GroqLLM()
     prompt_builder = DefaultPromptBuilder()
     summarizer = DefaultSummarizer(llm=llm, prompt_builder=prompt_builder)
     return SummarizeDocuments(summarizer)
 
 def get_query_vector_db() -> QueryVectorDB:
-    llm = GroqLLM(api_key="your-api-key")
+    llm = GroqLLM()
     prompt_builder = DefaultPromptBuilder()
     query_responder = DefaultQueryResponder(llm=llm, prompt_builder=prompt_builder)
     return QueryVectorDB(query_responder)

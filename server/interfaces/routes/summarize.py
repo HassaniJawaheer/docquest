@@ -22,4 +22,4 @@ def summarize(
     summary = usecase.run(documents)
 
     # Return the summary as plain JSON
-    return {"summary": summary.text}
+    return {"summary": summary.content}
