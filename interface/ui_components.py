@@ -44,13 +44,6 @@ def build_chat_zone():
     - Input at bottom
     """
     with gr.Column(scale=3) as chat_zone:
-        logo = gr.HTML("""
-            <div style="text-align: center; margin: 20px 0;">
-                <img src='.\docquest.png' style="width: 80px; height: auto; border-radius: 0;" alt="DocQuest Logo">
-            </div>
-        """)
-
-
         chat_history = gr.Chatbot(label="", type="messages", scale=1, height=600)
 
         with gr.Row():
@@ -63,7 +56,7 @@ def build_chat_zone():
             submit_button = gr.Button(
                 value="", 
                 scale=1, 
-                icon="file/send_icon.png",
+                icon="images/send_icon.png",
                 variant="primary",
                 elem_classes="circular-btn"
             )
@@ -80,25 +73,25 @@ def build_mode_buttons():
     with gr.Row(equal_height=True) as mode_row:
         buttons["Resume"] = gr.Button(
             value="",
-            icon="file/summary_icon.png",
+            icon="images/summary_icon.png",
             variant="secondary",
             elem_classes="circular-btn"
         )
         buttons["MCQ"] = gr.Button(
             value="",
-            icon="file/mcq_icon.png",
+            icon="images/mcq_icon.png",
             variant="secondary",
             elem_classes="circular-btn"
         )
         buttons["VectorDB Query"] = gr.Button(
             value="",
-            icon="file/user_vect_db_icon.png",
+            icon="images/user_vect_db_icon.png",
             variant="secondary",
             elem_classes="circular-btn"
         )
         buttons["Base Centrale Query"] = gr.Button(
             value="",
-            icon="file/central_vect_db_icon.png",
+            icon="images/central_vect_db_icon.png",
             variant="secondary",
             elem_classes="circular-btn"
         )

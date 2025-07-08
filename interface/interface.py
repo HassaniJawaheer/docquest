@@ -9,7 +9,7 @@ from callbacks import (
 )
 from constants import MODES
 
-# Custom CSS for circular buttons
+# Custom CSS
 custom_css = """
 .circular-btn button {
     border-radius: 50% !important;
@@ -69,4 +69,4 @@ with gr.Blocks(title="DocQuest", css=custom_css) as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch(allowed_paths=["."])
+    demo.launch(allowed_paths=["images"])
