@@ -7,3 +7,4 @@ venv/
 .DS_Store
 __faiss_index__/
 env/
+squelette_interface.md
