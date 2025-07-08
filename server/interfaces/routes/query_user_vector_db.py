@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
 from typing import List
+from server.domain.models.chat_message import ChatMessage
 from server.domain.models.chunk import Chunk
 from server.infrastructure.dependencies import get_query_vector_db
 from server.usecases.query_vector_db import QueryVectorDB
@@ -20,7 +21,7 @@ def query_user_vector_db(
 
     # Retrieve the user-specific vector DB
     try:
-        vector_db = request.app.state.vector_db_manager.get(session_id, "central")
+        vector_db = request.app.state.vector_db_manager.get(session_id)
     except KeyError:
         raise HTTPException(status_code=404, detail=f"No vector DB found for session {session_id}")
 
@@ -28,8 +29,17 @@ def query_user_vector_db(
     retriever = LangchainFaissRetriever(vector_db)
     chunks: List[Chunk] = retriever.retrieve(query)
 
-    # Run the query use case to generate an answer
-    answer = usecase.run(query, chunks)
+    history = request.app.state.chat_history_manager.get(session_id)
 
+    # Run the query use case to generate an answer
+    answer = usecase.run(query, chunks, history)
+       
+    for msg in [
+        ChatMessage(role="user", content=query.content),
+        ChatMessage(role="assistant", content=answer.content)
+    ]:
+        request.app.state.chat_history_manager.append(session_id, msg)
+
+    
     # Return the answer as JSON
     return answer.model_dump()

@@ -18,12 +18,10 @@ def query_central_vector_db(
 ):  
     # Extract session ID from the request
     session_id = get_session_id(request)
-    print(session_id)
 
     # Retrieve the central shared vector DB
     try:
         vector_db = request.app.state.vector_db_manager.get("central")
-        print(vector_db)
     except KeyError:
         raise HTTPException(status_code=404, detail="Central vector DB not found.")
 
