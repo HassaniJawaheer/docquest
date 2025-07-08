@@ -14,3 +14,4 @@ python-docx
 faiss-cpu
 apscheduler
 sentence-transformers
+gradio

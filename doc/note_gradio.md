@@ -1,14 +1,6 @@
 # Note sur comment utiliser Gradio
 
 Gradio est une bibliothèque Python open source qui permet de créer rapidement des interfaces web interactives pour vos modèles et fonctions Python.
-Elle est principalement utilisée pour :
-
-* Prototyper et tester facilement des modèles de ML/IA.
-* Partager vos modèles via une URL locale ou publique.
-* Démontrer des applications interactives sans développer tout un frontend.
-
-Gradio génère des interfaces web réactives accessibles depuis un navigateur, sans avoir à écrire du HTML/CSS/JS.
-
 
 ## Concepts de base
 
