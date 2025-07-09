@@ -137,7 +137,7 @@ def continuous_update_central_vector_db():
             logger.info("[watcher] Checking for updates in central corpus...")
             updated_db = updater.run(CENTRAL_CORPUS_PATH)
             if updated_db != "No change detected. Skipped update.":
-                app.state.vector_db_manager.register("central", updated_db)
+                app.state.vector_db_manager.set("central", updated_db)
                 logger.info("[watcher] Central vector DB updated and re-registered.")
             else:
                 logger.info("[watcher] No update needed.")

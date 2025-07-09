@@ -4,7 +4,6 @@ from ui_components import build_sidebar, build_chat_zone, build_mode_buttons
 from callbacks import (
     handle_message,
     handle_mode_change,
-    handle_new_conversation,
     handle_file_upload,
 )
 from constants import MODES
@@ -23,7 +22,6 @@ custom_css = """
 with gr.Blocks(title="DocQuest", css=custom_css) as demo:
     # Current mode state
     current_mode = gr.State(value="Query CentralDB")  # default mode
-    conversation_list_state = gr.State(value=[("No conversations yet.", "default")])
 
     with gr.Row():
         # Left panel (sidebar)
@@ -39,27 +37,21 @@ with gr.Blocks(title="DocQuest", css=custom_css) as demo:
     # Wire callbacks
     user_input.submit(
         handle_message,
-        inputs=[user_input, current_mode],
+        inputs=[user_input, current_mode, chat_history],
         outputs=[chat_history],
     )
 
     for mode_name, mode_button in mode_buttons.items():
         mode_button.click(
             handle_mode_change,
-            inputs=[gr.State(mode_name), conversation_list_state],
-            outputs=[chat_history, current_mode, conversation_list_state, sidebar["conversation_list"]],
+            inputs=[gr.State(mode_name), chat_history],
+            outputs=[chat_history, current_mode],
         )
 
     submit_button.click(
         handle_message,
-        inputs=[user_input, current_mode],
+        inputs=[user_input, current_mode, chat_history],
         outputs=[chat_history],
-    )
-
-    sidebar["new_conversation_button"].click(
-        handle_new_conversation,
-        inputs=[conversation_list_state],
-        outputs=[chat_history, conversation_list_state, sidebar["conversation_list"]],
     )
 
     sidebar["file_upload"].upload(
