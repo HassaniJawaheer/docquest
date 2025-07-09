@@ -1,7 +1,13 @@
 import gradio as gr
 
 def build_sidebar():
+    """
+    Builds the sidebar with:
+    - Document upload section
+    - Vector DB creation section
+    """
     components = {}
+
     with gr.Column(scale=1, min_width=200) as sidebar:
         gr.Markdown("### Documents")
 
@@ -14,9 +20,16 @@ def build_sidebar():
         
         upload_status = gr.Label(value="", label="État de l'upload", visible=False)
 
+        gr.Markdown("### Base vectorielle")
+        create_db_button = gr.Button("Créer la base vectorielle", variant="primary")
+        vector_db_status = gr.Label(value="", label="État de la base vectorielle", visible=False)
+
     components["sidebar"] = sidebar
     components["file_upload"] = file_upload
     components["upload_status"] = upload_status
+    components["create_db_button"] = create_db_button
+    components["vector_db_status"] = vector_db_status
+
     return components
 
 def build_chat_zone():
@@ -52,7 +65,7 @@ def build_mode_buttons():
     buttons = {}
 
     with gr.Row(equal_height=True) as mode_row:
-        buttons["Resume"] = gr.Button(
+        buttons["Summary"] = gr.Button(
             value="Résumé vos documents",
             icon="images/summary_icon.png",
             variant="secondary",
@@ -64,7 +77,7 @@ def build_mode_buttons():
             variant="secondary",
             elem_classes="circular-btn"
         )
-        buttons["VectorDB Query"] = gr.Button(
+        buttons["Query VectorDB"] = gr.Button(
             value="Intérroger vos documents",
             icon="images/user_vect_db_icon.png",
             variant="secondary",

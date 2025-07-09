@@ -2,6 +2,7 @@ import gradio as gr
 
 from ui_components import build_sidebar, build_chat_zone, build_mode_buttons
 from callbacks import (
+    handle_create_vector_db,
     handle_message,
     handle_mode_change,
     handle_file_upload,
@@ -59,6 +60,13 @@ with gr.Blocks(title="DocQuest", css=custom_css) as demo:
         inputs=[sidebar["file_upload"], current_mode],
         outputs=[sidebar["upload_status"]],
     )
+
+    sidebar["create_db_button"].click(
+        handle_create_vector_db,
+        inputs=[current_mode],
+        outputs=[sidebar["vector_db_status"]],
+    )
+
 
 if __name__ == "__main__":
     demo.launch(allowed_paths=["images"])

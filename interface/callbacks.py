@@ -95,4 +95,27 @@ def handle_file_upload(uploaded_files, mode):
         for f in open_files:
             f.close()
 
+def handle_create_vector_db(mode):
+    """
+    Calls the backend route to create the vector database.
+    Only works if the current mode is 'Query VectorDB'.
+    """
+    # Check if mode is correct
+    if mode != "Query VectorDB":
+        return gr.update(value="Please upload your documents and switch to 'Query VectorDB' mode to create the database.", visible=True)
+
+    params = {
+        "session_id": SESSION_ID
+    }
+
+    # Call backend API
+    response = post_to_api("/create_vector_db", params=params)
+
+    status = response.get("status", "unknown")
+    message = response.get("message", "")
+
+    if status == "success":
+        return gr.update(value="Vector database created", visible=True)
+    else:
+        return gr.update(value=f"Failed to create vector database: {message}", visible=True)
 

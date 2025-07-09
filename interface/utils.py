@@ -14,30 +14,31 @@ def post_to_api(endpoint, params=None, json=None, files=None):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-
-def qcm_to_string(qcm_dict: dict) -> str:
+def qcm_to_string(qcm_dict: dict, index: int = 1) -> str:
     """
-    Converts a QCM dict into a human-readable markdown string.
+    Converts a MCQ dict into a human-readable markdown string.
     """
     if not qcm_dict:
-        return "[No QCM data]"
+        return "[No MCQ data]"
 
-    parts = []
-    question = qcm_dict.get("question", "[No question provided]")
-    parts.append(f"**QCM:** {question}\n")
+    lines = []
 
-    options = qcm_dict.get("options", [])
-    if options:
-        for idx, opt in enumerate(options, 1):
-            parts.append(f"- {idx}. {opt}")
-    else:
-        parts.append("_No options provided._")
+    # Numérotation et question
+    question = qcm_dict.get("question", "[Question non fournie]")
+    lines.append(f"**Question {index} :** {question}\n")
 
-    answer = qcm_dict.get("answer", "[No answer provided]")
-    parts.append(f"\n**Answer:** {answer}")
+    # Options / distracteurs + bonne réponse
+    correct = qcm_dict.get("correct_answer", "[Réponse non fournie]")
+    distractors = qcm_dict.get("distractors", [])
+    options = distractors + [correct]
 
-    return "\n".join(parts)
+    for idx, opt in enumerate(options, 1):
+        lines.append(f"    {idx}. {opt}")
 
+    # Réponse
+    lines.append(f"\n**Réponse :** {correct}")
+
+    return "\n".join(lines)
 
 def format_server_response(response: dict, mode: str) -> list[dict]:
     """
@@ -49,7 +50,19 @@ def format_server_response(response: dict, mode: str) -> list[dict]:
         content = response.get("summary", str(response))
 
     elif mode == "MCQ":
-        content = qcm_to_string(response.get("qcm", {}))
+        qcms = response.get("questions", [])
+        if qcms:
+            parts = []
+            for i, q in enumerate(qcms, 1):
+                qcm_dict = {
+                    "question": q.get("question"),
+                    "distractors": q.get("distractors", []),
+                    "correct_answer": q.get("correct_answer")
+                }
+                parts.append(qcm_to_string(qcm_dict, index=i))
+            content = "\n\n".join(parts)
+        else:
+            content = "[Aucune donnée QCM]"
 
     elif mode in ["Query CentralDB", "Query VectorDB"]:
         if isinstance(response, dict):
@@ -61,4 +74,3 @@ def format_server_response(response: dict, mode: str) -> list[dict]:
         content = str(response)
 
     return [{"role": "assistant", "content": content}]
-
