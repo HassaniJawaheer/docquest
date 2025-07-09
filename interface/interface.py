@@ -57,7 +57,7 @@ with gr.Blocks(title="DocQuest", css=custom_css) as demo:
     sidebar["file_upload"].upload(
         handle_file_upload,
         inputs=[sidebar["file_upload"], current_mode],
-        outputs=[chat_history],
+        outputs=[sidebar["upload_status"]],
     )
 
 if __name__ == "__main__":

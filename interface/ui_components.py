@@ -1,23 +1,22 @@
 import gradio as gr
 
 def build_sidebar():
-    """
-    Builds the left sidebar panel with:
-    - Documents drag-and-drop zone on bottom
-    """
     components = {}
-
     with gr.Column(scale=1, min_width=200) as sidebar:
         gr.Markdown("### Documents")
 
-        file_upload = gr.File(
+        file_upload = gr.UploadButton(
+            "Glisser ou choisir vos documents",
             file_types=[".pdf", ".docx", ".txt"],
-            label="Glisser vos documents ici",
-            interactive=True
+            file_count="multiple",
+            type="filepath"
         )
+        
+        upload_status = gr.Label(value="", label="État de l'upload", visible=False)
 
     components["sidebar"] = sidebar
     components["file_upload"] = file_upload
+    components["upload_status"] = upload_status
     return components
 
 def build_chat_zone():

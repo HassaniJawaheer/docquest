@@ -3,6 +3,7 @@ from utils import post_to_api, format_server_response
 
 from constants import SESSION_ID
 from utils import post_to_api, format_server_response
+import gradio as gr
 
 def handle_message(user_input, mode, chat_history):
     """
@@ -10,7 +11,6 @@ def handle_message(user_input, mode, chat_history):
     Returns updated chat history.
     """
     chat_history = chat_history or []
-    print(mode)
     if mode not in ["Summary", "MCQ", "Query CentralDB", "Query VectorDB"]:
         chat_history.append({"role": "assistant", "content": "Problème coté client."})
         return chat_history
@@ -44,10 +44,8 @@ def handle_message(user_input, mode, chat_history):
 
     # Envoie la requête
     response = post_to_api(endpoint, params=params, json=payload)
-    print("Réponse brute serveur :", response)
     bot_messages = format_server_response(response, mode)
     chat_history.extend(bot_messages)
-    print(chat_history)
     return chat_history
 
 
@@ -62,37 +60,39 @@ def handle_mode_change(selected_mode, chat_history):
         selected_mode,
     )
 
-def handle_file_upload(file_paths, mode):
-    """
-    Uploads multiple files in one request to the appropriate workspace based on mode.
-    Returns a status message.
-    """
-    workspace = "rag"  # default
+def handle_file_upload(uploaded_files, mode):
+    if not uploaded_files:
+        return gr.update(value="Aucun fichier reçu", visible=True)
+
+    workspace = "rag"
     if mode == "Summary":
         workspace = "summarize"
     elif mode == "MCQ":
         workspace = "mcq"
 
-    # Build list of files as expected by FastAPI
-    import os
     files = []
-    for file_path in file_paths:
-        if file_path and os.path.isfile(file_path):
-            files.append(("files", open(file_path, "rb")))
+    open_files = []
+    try:
+        for filedata in uploaded_files:
+            path = filedata.name
+            f = open(path, "rb")
+            open_files.append(f)
+            files.append(("files", f))
 
-    params = {
-        "workspace": workspace,
-        "session_id": SESSION_ID
-    }
+        params = {
+            "workspace": workspace,
+            "session_id": SESSION_ID
+        }
 
-    response = post_to_api("/upload", params=params, files=files)
+        response = post_to_api("/upload", params=params, files=files)
 
-    status = response.get("status", "unknown")
-    message = response.get("message", "")
+        status = response.get("status", "unknown")
+        if status == "success":
+            return gr.update(value="Upload réussi", visible=True)
+        else:
+            return gr.update(value=f"Upload échoué: {response.get('message')}", visible=True)
+    finally:
+        for f in open_files:
+            f.close()
 
-    if status == "success":
-        result_text = "All files uploaded successfully."
-    else:
-        result_text = f"Upload failed: {message}"
 
-    return [{"role": "assistant", "content": result_text}]
