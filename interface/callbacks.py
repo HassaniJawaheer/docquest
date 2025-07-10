@@ -49,15 +49,28 @@ def handle_message(user_input, mode, chat_history):
     return chat_history
 
 
-def handle_mode_change(selected_mode, chat_history):
+def handle_mode_change(selected_mode, chat_history, user_input):
     """
-    Stores the selected mode.
+    Stores the selected mode and updates placeholder text accordingly.
     """
     chat_history = chat_history or []
+
+    placeholder_text = ""
+    if selected_mode == "Summary":
+        placeholder_text = "Demander un résumé…"
+    elif selected_mode == "MCQ":
+        placeholder_text = "Demander un QCM…"
+    elif selected_mode == "Query VectorDB":
+        placeholder_text = "Poser une question sur vos documents…"
+    elif selected_mode == "Query CentralDB":
+        placeholder_text = "Poser une question sur la base centrale…"
+    else:
+        placeholder_text = "Poser votre question…"
 
     return (
         chat_history,
         selected_mode,
+        gr.update(placeholder=placeholder_text)
     )
 
 def handle_file_upload(uploaded_files, mode):

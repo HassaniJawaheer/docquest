@@ -20,7 +20,12 @@ custom_css = """
 }
 """
 
-with gr.Blocks(title="DocQuest", css=custom_css) as demo:
+favicon_html = """
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+"""
+
+
+with gr.Blocks(title="DocQuest", css=custom_css, theme=gr.themes.Soft(), head=favicon_html) as demo:
     # Current mode state
     current_mode = gr.State(value="Query CentralDB")  # default mode
 
@@ -45,8 +50,8 @@ with gr.Blocks(title="DocQuest", css=custom_css) as demo:
     for mode_name, mode_button in mode_buttons.items():
         mode_button.click(
             handle_mode_change,
-            inputs=[gr.State(mode_name), chat_history],
-            outputs=[chat_history, current_mode],
+            inputs=[gr.State(mode_name), chat_history, user_input],
+            outputs=[chat_history, current_mode, user_input],
         )
 
     submit_button.click(
